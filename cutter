@@ -1,0 +1,19 @@
+#!/bin/bash
+input="$1"
+time=$(kdialog --title "Input Time" --inputbox "Please Enter Start and End Time? (00:00:10 00:12:00)")
+start=$(echo $time | cut -f 1 -d ' ')
+end=$(echo $time | cut -f 2 -d ' ')
+
+name=$(echo $input | cut -f 1 -d '.')
+mkvmerge -o sample.mkv $input --split timecodes:$start,$end > /dev/null 
+Ssec=$(echo $start | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }')
+if [ "$Ssec" == "0" ] 
+	then
+		mkvmerge -o "$name-censored.mkv" sample-002.mkv > /dev/null && notify-send -a "Cutter" -t 2000 "Job Is Done"
+		rm sample-00*
+
+else
+		mkvmerge -o "$name-censored.mkv" sample-001.mkv + sample-003.mkv > /dev/null && \
+                notify-send -a "Cutter" -t 2000 "Job Is Done" 
+		rm sample-00*
+	fi
